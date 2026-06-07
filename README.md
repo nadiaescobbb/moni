@@ -10,8 +10,10 @@ Landing page de validación para Moni. Encuesta corta para freelancers monotribu
 
 ## Uso local
 
-Abrir `moni-validacion.html.html` en el navegador.
+Abrir `index.html` en el navegador.
 
 ## Email de contacto
 
 Las respuestas de la encuesta se envían a `monivalidacion@gmail.com` via [FormSubmit](https://formsubmit.co).
+
+> El envío se hace con `mode: 'no-cors'`, por lo que el cliente no puede confirmar la entrega. Si el primer mail cae en spam, marcá "No es spam" para que los siguientes lleguen directo a la bandeja.
