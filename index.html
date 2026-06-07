@@ -186,6 +186,23 @@
       background: var(--surface-hover);
     }
 
+    .question.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-color: transparent;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .question {
+      max-height: 1200px;
+      opacity: 1;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease, padding 0.3s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
     .question-header {
       display: flex;
       align-items: flex-start;
@@ -511,6 +528,9 @@
       .animate-in {
         animation: none;
       }
+      .question {
+        transition: none;
+      }
     }
 
     .label-required {
@@ -743,6 +763,17 @@
       question.classList.remove('has-error');
       const err = question.querySelector('.error-msg');
       if (err) err.style.display = 'none';
+
+      if (name === 'q4') {
+        const q5 = document.querySelector('.question[data-q="5"]');
+        if (this.value === 'no') {
+          q5.classList.add('collapsed');
+          q5.removeAttribute('data-required');
+        } else {
+          q5.classList.remove('collapsed');
+          q5.setAttribute('data-required', 'true');
+        }
+      }
     });
   });
 
