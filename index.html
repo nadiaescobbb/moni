@@ -109,26 +109,6 @@
       padding: 72px 0 56px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 24px;
-    }
-
-    .badge::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      background: var(--accent);
-      border-radius: 50%;
-    }
-
     h1 {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
@@ -530,15 +510,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    .animate-in {
-      animation: fadeUp 0.5s ease both;
-    }
-
     .question {
       animation: fadeUp 0.5s ease both;
     }
@@ -550,8 +521,7 @@
     .question:nth-child(6) { animation-delay: 0.25s; }
 
     @media (prefers-reduced-motion: reduce) {
-      .question,
-      .animate-in {
+      .question {
         animation: none;
       }
       .question,
@@ -579,7 +549,7 @@
   </header>
 
   <section class="hero">
-    <h1>Te olvidas del <em>monotributo</em>?</h1>
+    <h1>¿Te olvidás del <em>monotributo</em>?</h1>
     <p class="hero-sub">
       Estamos construyendo un servicio que avisa por WhatsApp antes de cada vencimiento de ARCA y cuando es momento de recategorizarse. Respondé 5 preguntas y te avisamos cuando esté disponible.
     </p>
@@ -594,7 +564,7 @@
       </div>
     </div>
 
-    <form id="survey-form" action="https://formsubmit.co/monivalidacion@gmail.com" method="POST" onsubmit="return handleSubmit(event)">
+    <form id="survey-form" action="https://formsubmit.co/monivalidacion@gmail.com" method="POST">
       <input type="hidden" name="_subject" value="Nueva respuesta Moni validacion" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
@@ -814,19 +784,21 @@
       }
     }
 
-    const q4Checked = document.querySelector('input[name="q4"]:checked');
-    if (q4Checked) {
-      const q5 = document.querySelector('.question[data-q="5"]');
-      if (q4Checked.value === 'no') {
-        q5.classList.add('collapsed');
-        q5.removeAttribute('data-required');
-      } else {
-        q5.classList.remove('collapsed');
-        q5.setAttribute('data-required', 'true');
-      }
-    }
-
+    syncQ5Visibility();
     updateProgress();
+  }
+
+  function syncQ5Visibility() {
+    const q4Checked = document.querySelector('input[name="q4"]:checked');
+    const q5 = document.querySelector('.question[data-q="5"]');
+    if (!q5) return;
+    if (q4Checked && q4Checked.value === 'no') {
+      q5.classList.add('collapsed');
+      q5.removeAttribute('data-required');
+    } else {
+      q5.classList.remove('collapsed');
+      q5.setAttribute('data-required', 'true');
+    }
   }
 
   document.querySelectorAll('.option input[type="radio"]').forEach(input => {
@@ -843,14 +815,7 @@
       if (err) err.style.display = 'none';
 
       if (name === 'q4') {
-        const q5 = document.querySelector('.question[data-q="5"]');
-        if (this.value === 'no') {
-          q5.classList.add('collapsed');
-          q5.removeAttribute('data-required');
-        } else {
-          q5.classList.remove('collapsed');
-          q5.setAttribute('data-required', 'true');
-        }
+        syncQ5Visibility();
       }
 
       updateProgress();
@@ -901,7 +866,7 @@
     if (!valid) {
       const firstError = document.querySelector('.has-error, [style*="block"]');
       if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return false;
+      return;
     }
 
     const form = document.getElementById('survey-form');
@@ -938,9 +903,9 @@
       success.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    return false;
   }
+
+  document.getElementById('survey-form').addEventListener('submit', handleSubmit);
 
   restoreSurvey();
 </script>
