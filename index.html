@@ -568,7 +568,6 @@
       <input type="hidden" name="_subject" value="Nueva respuesta Moni validacion" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_spreadsheet" value="1Nvon0KPmvuyYcc8eE_XLBicJZ0XZYAKvT5bMBi-Y0ZU" />
 
       <!-- Q1 -->
       <div class="question" data-q="1" data-type="radio" data-required="true">
@@ -890,6 +889,12 @@
     }).catch((err) => {
       console.error('Error al enviar:', err);
       showSuccess();
+    });
+
+    fetch('https://script.google.com/macros/s/AKfycbyXzXAYz-E6sAVFoimdYGU1yZlEStvh1-ZzQihnMEi0w0NGampCVEtuSkjFEXGr0Kn3/exec', {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors'
     });
 
     function showSuccess() {
