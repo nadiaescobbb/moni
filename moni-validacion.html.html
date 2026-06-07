@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moni — monotributo, sin sorpresas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #121212;
+      --surface-hover: #1a1a1a;
+      --border: #1e1e1e;
+      --border-focus: #e8c547;
+      --text: #f0ede8;
+      --muted: #6b6762;
+      --muted-light: #8a8580;
+      --accent: #e8c547;
+      --accent-dim: rgba(232, 197, 71, 0.08);
+      --accent-hover: #f0d060;
+      --danger: #e85d47;
+      --success: #47c47a;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.3;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      padding: 40px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #0a0a0a;
+      letter-spacing: -1px;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .header-badge {
+      font-size: 11px;
+      color: var(--muted-light);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      padding: 72px 0 56px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(32px, 7vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--muted-light);
+      line-height: 1.8;
+      max-width: 440px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 48px;
+    }
+
+    .form-section {
+      padding-bottom: 64px;
+    }
+
+    .form-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .question {
+      margin-bottom: 8px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .question:focus-within {
+      border-color: var(--border-focus);
+      background: var(--surface-hover);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .question-number {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      min-width: 28px;
+      padding-top: 1px;
+    }
+
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-left: 44px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+
+    .option:hover {
+      border-color: rgba(232, 197, 71, 0.25);
+      background: var(--accent-dim);
+    }
+
+    .option input[type="radio"],
+    .option input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .option-indicator {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .option input:checked ~ .option-indicator {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .option input:checked ~ .option-indicator::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .option-indicator::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #0a0a0a;
+      border-radius: 50%;
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .option-label {
+      font-size: 13px;
+      color: var(--muted-light);
+      line-height: 1.5;
+      transition: color 0.15s;
+    }
+
+    .option input:checked ~ .option-label {
+      color: var(--text);
+    }
+
+    .option input:checked ~ .option-indicator {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .option.selected {
+      border-color: rgba(232, 197, 71, 0.35);
+      background: var(--accent-dim);
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+      resize: none;
+    }
+
+    .text-input::placeholder {
+      color: var(--muted);
+    }
+
+    .text-input:focus {
+      border-color: var(--border-focus);
+      background: var(--surface);
+    }
+
+    .contact-section {
+      margin-top: 32px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+    }
+
+    .contact-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .contact-header .question-text {
+      font-size: 14px;
+    }
+
+    .contact-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding-left: 44px;
+    }
+
+    @media (max-width: 480px) {
+      .contact-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .submit-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+      padding-left: 44px;
+    }
+
+    .submit-btn {
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.2px;
+      padding: 14px 28px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .submit-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .submit-note {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .error-msg {
+      display: none;
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 8px;
+      padding-left: 44px;
+    }
+
+    .has-error {
+      border-color: rgba(232, 93, 71, 0.4) !important;
+    }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 96px 0;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(71, 196, 122, 0.1);
+      border: 1px solid rgba(71, 196, 122, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: var(--success);
+      font-size: 24px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+    }
+
+    .success-screen h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      color: var(--muted-light);
+      font-size: 14px;
+      max-width: 320px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-note {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer-note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .animate-in {
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .question {
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .question:nth-child(2) { animation-delay: 0.05s; }
+    .question:nth-child(3) { animation-delay: 0.1s; }
+    .question:nth-child(4) { animation-delay: 0.15s; }
+    .question:nth-child(5) { animation-delay: 0.2s; }
+    .question:nth-child(6) { animation-delay: 0.25s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .question,
+      .animate-in {
+        animation: none;
+      }
+    }
+
+    .label-required {
+      color: var(--muted);
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <a href="#" class="logo">
+      <div class="logo-mark">M</div>
+      <span class="logo-text">moni</span>
+    </a>
+    <span class="header-badge">Validacion</span>
+  </header>
+
+  <section class="hero">
+    <div class="badge">Encuesta</div>
+    <h1>Te olvidas del <em>monotributo</em>?</h1>
+    <p class="hero-sub">
+      Estamos construyendo algo para que nunca mas te coma una multa. Respondé 5 preguntas y te avisamos primero cuando este listo.
+    </p>
+  </section>
+
+  <section class="form-section" id="form-section">
+    <div class="form-meta">5 preguntas / 2 min</div>
+
+    <form id="survey-form" action="https://formsubmit.co/monivalidacion@gmail.com" method="POST" onsubmit="return handleSubmit(event)">
+      <input type="hidden" name="_subject" value="Nueva respuesta Moni validacion" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+
+      <!-- Q1 -->
+      <div class="question" data-q="1" data-type="radio" data-required="true">
+        <div class="question-header">
+          <span class="question-number">01</span>
+          <p class="question-text">Manejas tu monotributo solo o tenes contador?</p>
+        </div>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q1" value="solo" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Lo manejo solo</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="contador" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Tengo contador</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="aveces" />
+            <div class="option-indicator"></div>
+            <span class="option-label">A veces pido ayuda</span>
+          </label>
+        </div>
+        <span class="error-msg">Selecciona una opcion para continuar.</span>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question" data-q="2" data-type="radio" data-required="true">
+        <div class="question-header">
+          <span class="question-number">02</span>
+          <p class="question-text">Alguna vez se te paso una fecha de vencimiento o te enteraste tarde de que tenias que recategorizarte?</p>
+        </div>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q2" value="si" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Si, me paso</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="no" />
+            <div class="option-indicator"></div>
+            <span class="option-label">No, nunca</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="nose" />
+            <div class="option-indicator"></div>
+            <span class="option-label">No se, pero me preocupa que pase</span>
+          </label>
+        </div>
+        <span class="error-msg">Selecciona una opcion para continuar.</span>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question" data-q="3" data-type="radio" data-required="true">
+        <div class="question-header">
+          <span class="question-number">03</span>
+          <p class="question-text">Como te acordas hoy de las fechas importantes de ARCA?</p>
+        </div>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q3" value="calendario" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Calendario o alarma en el celular</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="contador" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Mi contador me avisa</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="memoria" />
+            <div class="option-indicator"></div>
+            <span class="option-label">No tengo sistema, me acuerdo solo</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="olvido" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Casi siempre se me olvida algo</span>
+          </label>
+        </div>
+        <span class="error-msg">Selecciona una opcion para continuar.</span>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question" data-q="4" data-type="radio" data-required="true">
+        <div class="question-header">
+          <span class="question-number">04</span>
+          <p class="question-text">Si existiera algo que te avise por WhatsApp antes de cada vencimiento y te diga cuando recategorizarte, lo usarias?</p>
+        </div>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q4" value="gratis" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Si, lo usaria si es gratis</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="pagaria" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Si, y pagaria por eso</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="no" />
+            <div class="option-indicator"></div>
+            <span class="option-label">No lo necesito</span>
+          </label>
+        </div>
+        <span class="error-msg">Selecciona una opcion para continuar.</span>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question" data-q="5" data-type="radio" data-required="true">
+        <div class="question-header">
+          <span class="question-number">05</span>
+          <p class="question-text">Cuanto pagarias por mes por ese servicio?</p>
+        </div>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q5" value="nada" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Nada, solo si es gratis</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="2000" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Hasta $2.000/mes</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="5000" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Hasta $5.000/mes</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="mas" />
+            <div class="option-indicator"></div>
+            <span class="option-label">Mas de $5.000/mes</span>
+          </label>
+        </div>
+        <span class="error-msg">Selecciona una opcion para continuar.</span>
+      </div>
+
+      <!-- Contact -->
+      <div class="contact-section">
+        <div class="contact-header">
+          <span class="question-number">Ultimo paso</span>
+          <p class="question-text">Donde te avisamos cuando este listo? <span class="label-required">(requerido)</span></p>
+        </div>
+        <div class="contact-fields">
+          <div class="field-group">
+            <label>Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="text-input" placeholder="Tu nombre" />
+          </div>
+          <div class="field-group">
+            <label>WhatsApp o email</label>
+            <input type="text" name="contacto" id="contacto" class="text-input" placeholder="11 1234-5678 o mail" />
+          </div>
+        </div>
+        <span class="error-msg" id="contact-error" style="display:none; padding-left:44px;">Deja tu WhatsApp o email para avisarte.</span>
+        <div class="submit-row">
+          <button type="submit" class="submit-btn" id="submit-btn">
+            Enviar respuestas
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="submit-note">No spam. Solo te avisamos cuando Moni este disponible.</span>
+        </div>
+      </div>
+
+    </form>
+
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">&#10003;</div>
+      <h2>Gracias, te tenemos!</h2>
+      <p>Tus respuestas nos ayudan un monton. Te avisamos cuando Moni este listo.</p>
+    </div>
+
+  </section>
+
+  <footer>
+    <span class="footer-note">Moni &middot; beta &middot; hecho en Argentina</span>
+    <span class="footer-note"><a href="mailto:monivalidacion@gmail.com">monivalidacion@gmail.com</a></span>
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.option input[type="radio"]').forEach(input => {
+    input.addEventListener('change', function() {
+      const name = this.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(i => {
+        i.closest('.option').classList.remove('selected');
+      });
+      this.closest('.option').classList.add('selected');
+
+      const question = this.closest('.question');
+      question.classList.remove('has-error');
+      const err = question.querySelector('.error-msg');
+      if (err) err.style.display = 'none';
+    });
+  });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const questions = document.querySelectorAll('.question[data-required="true"]');
+    questions.forEach(q => {
+      const type = q.dataset.type;
+      if (type === 'radio') {
+        const name = q.querySelector('input[type="radio"]').name;
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if (!checked) {
+          q.classList.add('has-error');
+          const err = q.querySelector('.error-msg');
+          if (err) err.style.display = 'block';
+          valid = false;
+        }
+      }
+    });
+
+    const contacto = document.getElementById('contacto').value.trim();
+    if (!contacto) {
+      document.getElementById('contact-error').style.display = 'block';
+      valid = false;
+    } else {
+      document.getElementById('contact-error').style.display = 'none';
+    }
+
+    if (!valid) {
+      const firstError = document.querySelector('.has-error, [style*="block"]');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+
+    const form = document.getElementById('survey-form');
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const formData = new FormData(form);
+    formData.append('timestamp', new Date().toISOString());
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors'
+    }).then(() => {
+      showSuccess();
+    }).catch((err) => {
+      console.error('Error al enviar:', err);
+      showSuccess();
+    });
+
+    setTimeout(showSuccess, 4000);
+
+    function showSuccess() {
+      form.style.display = 'none';
+      const success = document.getElementById('success-screen');
+      success.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    return false;
+  }
+</script>
+
+</body>
+</html>
