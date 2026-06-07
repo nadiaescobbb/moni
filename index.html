@@ -784,6 +784,53 @@
 </div>
 
 <script>
+  const STORAGE_KEY = 'moni_survey';
+
+  function saveSurvey() {
+    const data = {};
+    for (let i = 1; i <= 5; i++) {
+      const checked = document.querySelector(`input[name="q${i}"]:checked`);
+      if (checked) data[`q${i}`] = checked.value;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (err) {
+      console.error('Error guardando:', err);
+    }
+  }
+
+  function restoreSurvey() {
+    let saved;
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    } catch (err) {
+      return;
+    }
+    if (!saved) return;
+
+    for (const [name, value] of Object.entries(saved)) {
+      const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+      if (input) {
+        input.checked = true;
+        input.closest('.option').classList.add('selected');
+      }
+    }
+
+    const q4Checked = document.querySelector('input[name="q4"]:checked');
+    if (q4Checked) {
+      const q5 = document.querySelector('.question[data-q="5"]');
+      if (q4Checked.value === 'no') {
+        q5.classList.add('collapsed');
+        q5.removeAttribute('data-required');
+      } else {
+        q5.classList.remove('collapsed');
+        q5.setAttribute('data-required', 'true');
+      }
+    }
+
+    updateProgress();
+  }
+
   document.querySelectorAll('.option input[type="radio"]').forEach(input => {
     input.addEventListener('change', function() {
       const name = this.name;
@@ -809,6 +856,7 @@
       }
 
       updateProgress();
+      saveSurvey();
     });
   });
 
@@ -884,6 +932,9 @@
       if (submitted) return;
       submitted = true;
       clearTimeout(timeoutId);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
       form.style.display = 'none';
       const success = document.getElementById('success-screen');
       success.style.display = 'block';
@@ -892,6 +943,8 @@
 
     return false;
   }
+
+  restoreSurvey();
 </script>
 
 </body>
