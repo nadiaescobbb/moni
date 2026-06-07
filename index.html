@@ -165,11 +165,37 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 40px;
+      margin-bottom: 12px;
       font-size: 11px;
       color: var(--muted);
       letter-spacing: 0.06em;
       text-transform: uppercase;
+    }
+
+    .progress {
+      margin-bottom: 40px;
+    }
+
+    .progress-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .progress-track {
+      height: 2px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width 0.3s ease;
     }
 
     .question {
@@ -528,7 +554,8 @@
       .animate-in {
         animation: none;
       }
-      .question {
+      .question,
+      .progress-fill {
         transition: none;
       }
     }
@@ -561,6 +588,12 @@
 
   <section class="form-section" id="form-section">
     <div class="form-meta">5 preguntas / 2 min</div>
+    <div class="progress">
+      <span class="progress-label" id="progress-label">0 / 5 respondidas</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
 
     <form id="survey-form" action="https://formsubmit.co/monivalidacion@gmail.com" method="POST" onsubmit="return handleSubmit(event)">
       <input type="hidden" name="_subject" value="Nueva respuesta Moni validacion" />
@@ -774,8 +807,23 @@
           q5.setAttribute('data-required', 'true');
         }
       }
+
+      updateProgress();
     });
   });
+
+  function updateProgress() {
+    const total = 5;
+    let answered = 0;
+    for (let i = 1; i <= total; i++) {
+      if (document.querySelector(`input[name="q${i}"]:checked`)) {
+        answered++;
+      }
+    }
+    const pct = (answered / total) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `${answered} / ${total} respondidas`;
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
